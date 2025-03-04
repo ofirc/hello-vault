@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: curl-pod
+  namespace: default
+  annotations:
+    vault.hashicorp.com/agent-inject: "true"
+    vault.hashicorp.com/agent-inject-secret-myapp: "secret/data/my-app"
+    vault.hashicorp.com/role: "default"
+    vault.hashicorp.com/secret-volume-path: "/api-client"
+    vault.hashicorp.com/agent-inject-secret-clientId: "secret/data/my-app"
+    vault.hashicorp.com/agent-inject-secret-clientToken: "secret/data/my-app"
+    vault.hashicorp.com/agent-inject-template-clientId: |
+      {{- with secret "secret/data/my-app" -}}
+      {{- .Data.data.clientId -}}
+      {{- end -}}
+    vault.hashicorp.com/agent-inject-template-clientToken: |
+      {{- with secret "secret/data/my-app" -}}
+      {{- .Data.data.clientToken -}}
+      {{- end -}}
+    vault.hashicorp.com/agent-inject-file-clientId: "clientId"
+    vault.hashicorp.com/agent-inject-file-clientToken: "clientToken"
+spec:
+  containers:
+  - name: curl
+    image: curlimages/curl
+    command: ["sleep"]
+    args: ["infinity"]
